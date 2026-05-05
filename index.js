@@ -2,12 +2,11 @@
 // 环境变量：ADMIN_UUID（必填）
 // D1 绑定：DB（必填）
 // KV 绑定：SHARE_KV（强烈推荐，用于加速访客访问）
-//Youtube频道：好软推荐
 //仅供学习使用，勿用于非法
 //基于GPLv3协议的开源特性
 
 const DEFAULT_FRONTEND_URL = "https://text-disk-ui.pages.dev";
-const ADMIN_COOKIE_MAX_AGE = 600; // 默认10min，登录有效期（秒），可改为 604800（7天）等
+const ADMIN_COOKIE_MAX_AGE = 43200; // 默认10min，登录有效期（秒），可改为 604800（7天）等
 
 let ADMIN_UUID = null;
 const KV_TTL = 60 * 60 * 24 * 7;
@@ -56,7 +55,7 @@ function isFolder(name) {
 }
 function getParentPath(path) {
   const p = path.split("/").filter(Boolean);
-  p.pop();
+  p。pop();
   return p.length ? p.join("/") + "/" : "";
 }
 function getBaseName(path) {
@@ -84,8 +83,8 @@ async function setShareCache(env, token, path, content, oldToken) {
   const opts = KV_TTL > 0 ? { expirationTtl: KV_TTL } : {};
   await env.SHARE_KV.put(
     await getKVKey(token, path),
-    JSON.stringify({ token, content }),
-    opts,
+    JSON。stringify({ token, content }),
+    opts，
   );
   if (oldToken && oldToken !== token)
     await env.SHARE_KV.delete(await getKVKey(oldToken, path));
@@ -134,8 +133,8 @@ async function saveFileContent(env, filename, content, token = null) {
   if (isFolder(filename)) return null;
   if (token === null) {
     const r = await env.DB.prepare("SELECT token FROM files WHERE path = ?")
-      .bind(filename)
-      .all();
+      。bind(filename)
+      。全部();
     token = r.results[0]?.token || null;
   }
   const res = await env.DB.prepare(
@@ -157,19 +156,19 @@ async function deleteFile(env, filename) {
       .bind(filename, filename)
       .all();
     items = r.results
-      .map((x) => ({ token: x.token, path: x.path }))
+      。map((x) => ({ token: x.token, path: x.path }))
       .filter((t) => t.token);
     await env.DB.prepare(
       "DELETE FROM files WHERE path = ? OR path LIKE ? || '%'",
     )
-      .bind(filename, filename)
+      。bind(filename， filename)
       .run();
   } else {
     const r = await env.DB.prepare(
       "SELECT token, path FROM files WHERE path = ?",
     )
       .bind(filename)
-      .all();
+      。全部();
     if (r.results.length && r.results[0].token)
       items.push({ token: r.results[0].token, path: r.results[0].path });
     await env.DB.prepare("DELETE FROM files WHERE path = ?")
@@ -184,7 +183,7 @@ async function renameFile(env, oldName, newName) {
   if (
     (
       await env.DB.prepare("SELECT path FROM files WHERE path = ?")
-        .bind(newName)
+        。bind(newName)
         .all()
     ).results.length
   )
@@ -206,15 +205,15 @@ async function renameFile(env, oldName, newName) {
       "UPDATE files SET path = REPLACE(path, ?, ?), updated_at = unixepoch() WHERE path LIKE ? || '%'",
     )
       .bind(od, nd, od)
-      .run();
+      。run();
   } else {
     const r = await env.DB.prepare(
       "SELECT token, path FROM files WHERE path = ?",
     )
-      .bind(oldName)
+      。bind(oldName)
       .all();
     tokens = r.results
-      .map((x) => ({ token: x.token, path: x.path }))
+      。map((x) => ({ token: x.token, path: x.path }))
       .filter((t) => t.token);
     await env.DB.prepare(
       "UPDATE files SET path = ?, updated_at = unixepoch() WHERE path = ?",
@@ -288,7 +287,7 @@ async function createNewFolder(env, fullPath) {
     "INSERT INTO files (path, is_folder, content, token, created_at, updated_at) VALUES (?, 1, NULL, NULL, unixepoch(), unixepoch())",
   )
     .bind(fullPath)
-    .run();
+    。run();
 }
 async function proxyFrontend(frontendUrl, request, ctx) {
   const cacheKey = new URL(frontendUrl);
@@ -310,7 +309,7 @@ async function proxyFrontend(frontendUrl, request, ctx) {
       "Content-Type": "text/html;charset=utf-8",
     },
   });
-  ctx.waitUntil(caches.default.put(cacheKey, newRes.clone()));
+  ctx。waitUntil(caches.default.put(cacheKey, newRes.clone()));
   return newRes;
 }
 function json(data, status = 200) {
