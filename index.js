@@ -6,7 +6,7 @@
 //基于GPLv3协议的开源特性
 
 const DEFAULT_FRONTEND_URL = "https://text-disk-ui.pages.dev";
-const ADMIN_COOKIE_MAX_AGE = 604800; // 默认10min，登录有效期（秒），可改为 604800（7天）等
+const ADMIN_COOKIE_MAX_AGE = 43200; // 默认10min，登录有效期（秒），可改为 604800（7天）等
 
 let ADMIN_UUID = null;
 const KV_TTL = 60 * 60 * 24 * 7;
